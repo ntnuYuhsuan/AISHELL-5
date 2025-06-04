@@ -1,17 +1,37 @@
-<h1 align="center">ICASSP2024 ICMC-ASR Challenge Baseline</h1>
+<div align="center">
+    <h1>
+    AISHELL-5
+    </h1>
+    <b><em>The First Open-Source In-Car Multi-Channel Multi-Speaker Speech Dataset for Automatic Speech Diarization and Recognition</em></b>
+    </p>
+    <p>
+        <img src="src/logo/NPU.jpg" alt="Institution 5" style="width: 200px; height: 60px;">
+        <img src="src/logo/AISHELL.jpg" alt="Institution 6" style="width: 180px; height: 60px;">
+        <img src="src/logo/LIXIANG.png" alt="Institution 6" style="width: 160px; height: 62px;">
+    </p>
+    <p>
+    </p>
+    <a href="https://arxiv.org/abs/2505.23036"><img src="https://img.shields.io/badge/Paper-ArXiv-red" alt="paper"></a>
+    <a href="https://sparkaudio.github.io/spark-tts/"><img src="https://img.shields.io/badge/Demo-Page-lightgrey" alt="version"></a>
+    <a href="https://huggingface.co/SparkAudio/Spark-TTS-0.5B"><img src="https://img.shields.io/badge/Hugging%20Face-Model%20Page-yellow" alt="Hugging Face"></a>
+    <a href="https://github.com/DaiYvhang/AISHELL-5"><img src="https://img.shields.io/badge/Platform-linux-lightgrey" alt="version"></a>
+    <a href="https://github.com/DaiYvhang/AISHELL-5"><img src="https://img.shields.io/badge/Python-3.12+-orange" alt="version"></a>
+    <a href="https://github.com/DaiYvhang/AISHELL-5"><img src="https://img.shields.io/badge/PyTorch-2.5+-brightgreen" alt="python"></a>
+    <a href="https://github.com/DaiYvhang/AISHELL-5"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="mit"></a>
+</div>
 
 ## Introduction
 
-This repository is the baseline code for the ICMC-ASR (In-Car Multi-Channel Automatic Speech Recognition).
+This repository is the baseline code for the AISHELL-5. We add relevant codes of SpatialNet and [silero-vad](https://github.com/snakers4/silero-vad) on the basis of the baseline of [ICMC-ASR](https://github.com/MrSupW/ICMC-ASR_Baseline).
 
-The code in this repository is based on the End-to-End Speech Recognition Toolkit [WeNet](https://github.com/wenet-e2e/wenet) and the Speaker Diarization toolkit [Pyannote-Audio](https://github.com/pyannote/pyannote-audio).
+The code in this repository is based on the End-to-End Speech Recognition Toolkit [WeNet](https://github.com/wenet-e2e/wenet) and the Speaker Diarization toolkit [Pyannote-Audio](https://github.com/pyannote/pyannote-audio) and [NBSS](https://github.com/Audio-WestlakeU/NBSS).
 
-## Data Preparation
+## Data Structure Explanation
 
-Before running this baseline, you should have downloaded and unzipped the dataset for this challenge, whose folder structure is as follows:
+After downloaded and unzipped the AISHELL-5 dataset, whose folder structure is as follows:
 
 ```Shell
-ICMC-ASR
+AISHELL-5
 └── train
 |   ├── 001
 |   ├── 002
@@ -47,17 +67,55 @@ ICMC-ASR
     ├── ...
     └── 018
 ```
+## Scenario Description
+### N: Window open
 
-### Notice:fire: 
+#### Window state
 
-We have released the latest near-field audio and textgrids of the training and development sets and fixed the issue with incorrect speaker seat (near-field audio and textgrid's file name) information that was reported by some teams. We strongly recommend you to get them from the download links in the email and replace **all** near-field audio and textgrids from the previously downloaded training and development sets.
+| Index | Driver’s side window | Sunroof     |
+|-------|-----------------------|-------------|
+| N1    | Open 1/3              | Closed      |
+| N2    | Closed                | Open 1/2    |
+| N3    | Open 1/2              | Open 1/2    |
+
+#### Car state
+
+| Index | Drive state | AC     | Car Stereo |
+|-------|-------------|--------|------------|
+| A     | Stopped     | Off    | Off        |
+| B     | Stopped     | Medium | Off        |
+| C     | Stopped     | High   | Medium     |
+| D     | 0–60 km/h   | Off    | Off        |
+| E     | 0–60 km/h   | Medium | Off        |
+| F     | 0–60 km/h   | High   | Medium     |
+
+<b>Note: In the case of AISHELL-5 data with number N, various combinations of window state and car state form different composite scenes through random combination.
+### M: All windows are closed</b>
+
+#### Car state
+
+| Index | Drive state   | AC     | Car Stereo |
+|-------|---------------|--------|------------|
+| A     | Stopped       | Off    | Off        |
+| B     | Stopped       | Medium | Off        |
+| C     | Stopped       | High   | Medium     |
+| D     | 0–40 km/h     | Off    | Off        |
+| E     | 0–40 km/h     | Medium | Off        |
+| F     | 0–40 km/h     | High   | Medium     |
+| G     | 40–80 km/h    | Off    | Off        |
+| H     | 40–80 km/h    | Medium | Off        |
+| I     | 40–80 km/h    | High   | Medium     |
+| J     | 80–120 km/h   | Off    | Off        |
+| K     | 80–120 km/h   | Medium | Off        |
+| L     | 80–120 km/h   | High   | Medium     |
+
 
 ## Environment Setup
 
 ```Shell
 # create environment
-conda create -n icmcasr python=3.9 -y
-conda activate icmcasr
+conda create -n aishell5 python=3.9 -y
+conda activate aishell5
 # install cudatoolkit and cudnn
 conda install cudatoolkit=11.6 cudnn=8.4.1 -y
 # install pytorch torchvision and torchaudio
@@ -66,9 +124,9 @@ pip install torch==1.13.1+cu116 torchvision==0.14.1+cu116 torchaudio==0.13.1 --e
 pip install -r requirements.txt
 ```
 
-## Track1 Baseline
+## Eval1
 
-The main steps are all in track1_asr/run.sh
+The main steps are all in eval1_asr/run.sh
 
 **[Stage 0]** Audio Frontend AEC + IVA. Segment long waves into short slices and prepare the data files (wav.scp, text, utt2spk and spk2utt).
 
@@ -82,25 +140,19 @@ The main steps are all in track1_asr/run.sh
 
 **[Stage 5]** Do model average and decoding.
 
-### CER(%) Results
 
-|   Dataset   |          Training Data           | Attention | Attention Rescoring | CTC Greedy Search | CTC Prefix Beam Search |
-| :---------: | :------------------------------: | :-------: | :-----------------: | :---------------: | :--------------------: |
-|     Dev     | AEC+IVA Far-field and Near-field |   33.28   |        32.92        |       33.66       |         33.66          |
-| Eval_Track1 | AEC+IVA Far-field and Near-field |   26.78   |        26.24        |       26.88       |         26.81          |
+## Eval2
 
-## Track2  Baseline
+Before running the Eval2, please make sure you have run all the stages in eval1_asr/run.sh and get the trained ASR model.
 
-Before running the track2 baseline, please make sure you have run all the stages in track1_asr/run.sh and get the trained ASR model.
-
-The VAD model of the track2 baseline is based on [Pyannote-Audio](https://github.com/pyannote/pyannote-audio). The installation steps are as follows.
+The VAD model of the track2 baseline is based on [Pyannote-Audio](https://github.com/pyannote/pyannote-audio) or [Silero](https://github.com/snakers4/silero-vad). The installation steps are as follows.
 
 1. Create a new conda environment with python3.9+ and torch2.0.0+ by the following steps. Or just modify the torch version of the conda env created at track1 baseline.
 
    ```shell
    # create environment
-   conda create -n icmcasr-pyannote python=3.9 -y
-   conda activate icmcasr-pyannote
+   conda create -n aishell5-pyannote python=3.9 -y
+   conda activate aishell5-pyannote
    # install pytorch torchvision and torchaudio
    conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 -c pytorch
    ```
@@ -111,7 +163,16 @@ The VAD model of the track2 baseline is based on [Pyannote-Audio](https://github
 
 4. Create your access token at [`hf.co/settings/tokens`](https://hf.co/settings/tokens).
 
-The main steps are all in track2_asdr/run.sh
+However, if you choose to use Silero, you can directly run it in the environment of Eval1. Just execute the command:
+
+```
+conda activate aishell5
+
+pip install silero-vad
+```
+
+
+The main steps are all in eval2_asdr/run.sh
 
 **[Stage 0]** Do VAD for enhanced audio data.
 
@@ -125,19 +186,34 @@ The main steps are all in track2_asdr/run.sh
 
 **[Stage 5]** Compute cpCER of the dev set.
 
-### cpCER(%) Results
 
-|   Dataset   |          VAD          |      ASR      | Attention | Attention Rescoring | CTC Greedy Search | CTC Prefix Beam Search |
-| :---------: | :-------------------: | :-----------: |:---------:|:-------------------:|:-----------------:|:----------------------:|
-|     Dev     | pyannote/segmentation | ebranchformer |   67.17   |        65.90        |       66.32       |         66.48          |
-| Eval_Track2 | pyannote/segmentation | ebranchformer |   74.29   |        72.88        |       73.19       |         73.52          |
+## Results
+### Model Evaluation Results
 
-## License
+| Model Type         | Model                  | Training Data       | Train/Finetune Epochs | Model Size | Eval1 | Eval2 AEC + IVA | Eval2 Spatialnet |
+|--------------------|------------------------|----------------------|------------------------|------------|--------|------------------|-------------------|
+| **ASR Models**     | Transformer            | 190 hours            | 100                    | 29.89 M    | 31.75  | 77.32           | 58.23             |
+|                    | Conformer              |                      | 100                    | 45.73 M    | 26.89  | **69.55**        | 53.78             |
+|                    | E-Branchformer         |                      | 100                    | 47.13 M    | **26.05** | 71.04           | **51.52**         |
+|                    | Zipformer-Small        |                      | 100                    | 30.22 M    | 31.22  | 74.86           | 54.34             |
+| **Open-Source Models** | Paraformer [10]     | 60,000 hours         | -                      | 220 M      | 20.16  | 74.04           | 48.67             |
+|                    | Paraformer-Finetuned*  | 190 hours            | 10                     | 220 M      | **16.65** | 66.68           | 47.18             |
+|                    | Whisper-Small [11]     | 680,000 hours        | -                      | 244 M      | 50.69  | 79.49           | 65.72             |
+|                    | SenseVoice-Small [12]  | Over 400,000 hours   | -                      | 234 M      | 24.63  | 75.58           | 50.64             |
+|                    | Qwen2-Audio [13]       | 520,000 hours        | -                      | 7B         | 29.92  | 76.24           | 54.48             |
 
-It is noted that the code can only be used for comparative or benchmarking purposes. Users can only use code supplied under a [License](./LICENSE) for non-commercial purposes.
+## Citation
+If you use this challenge dataset and baseline system in a publication, please cite the following paper:
+    
+    @article{dai2025aishell,
+            title={AISHELL-5: The First Open-Source In-Car Multi-Channel Multi-Speaker Speech Dataset for Automatic Speech Diarization and Recognition},
+            author={Dai, Yuhang and Wang, He and Li, Xingchen and     Zhang, Zihan and Wang, Shuiyuan and Xie, Lei and Xu, Xin and Guo, Hongxiao and Zhang, Shaoji and Bu, Hui and others},
+            journal={arXiv preprint arXiv:2505.23036},
+            year={2025}
+}
+The paper is available at https://arxiv.org/abs/2505.23036
 
-## Contact
+## Code license
 
-```
-[ICMC-ASR Committee](icmcasr_challenge@aishelldata.com)
-```
+[License](./LICENSE)
+

@@ -1,1 +1,0 @@
-../../track1_asr/local/generate_submission_file.py
