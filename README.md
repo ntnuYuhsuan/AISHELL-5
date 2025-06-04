@@ -188,17 +188,18 @@ The main steps are all in eval2_asdr/run.sh
 ## Results
 ### Model Evaluation Results
 
-| Model Type         | Model                  | Training Data       | Train/Finetune Epochs | Model Size | Eval1 | Eval2 AEC + IVA | Eval2 Spatialnet |
-|--------------------|------------------------|----------------------|------------------------|------------|--------|------------------|-------------------|
-| **ASR Models**     | Transformer            | 190 hours            | 100                    | 29.89 M    | 31.75  | 77.32           | 58.23             |
-|                    | Conformer              |                      | 100                    | 45.73 M    | 26.89  | **69.55**        | 53.78             |
-|                    | E-Branchformer         |                      | 100                    | 47.13 M    | **26.05** | 71.04           | **51.52**         |
-|                    | Zipformer-Small        |                      | 100                    | 30.22 M    | 31.22  | 74.86           | 54.34             |
-| **Open-Source Models** | Paraformer [10]     | 60,000 hours         | -                      | 220 M      | 20.16  | 74.04           | 48.67             |
-|                    | Paraformer-Finetuned*  | 190 hours            | 10                     | 220 M      | **16.65** | 66.68           | 47.18             |
-|                    | Whisper-Small [11]     | 680,000 hours        | -                      | 244 M      | 50.69  | 79.49           | 65.72             |
-|                    | SenseVoice-Small [12]  | Over 400,000 hours   | -                      | 234 M      | 24.63  | 75.58           | 50.64             |
-|                    | Qwen2-Audio [13]       | 520,000 hours        | -                      | 7B         | 29.92  | 76.24           | 54.48             |
+| Model Type              | Model                  | Training Data       | Train/Finetune Epochs | Model Size | Eval1 | Eval2 AEC + IVA | Eval2 Spatialnet |
+|-------------------------|------------------------|----------------------|------------------------|------------|-----------|------------------|-------------------|
+| **ASR Models**          | Transformer            | 190 hours            | 100                    | 29.89 M    | 31.75     | 77.32            | 58.23             |
+|                         | Conformer              |                      | 100                    | 45.73 M    | 26.89     | **69.55**        | 53.78             |
+|                         | E-Branchformer         |                      | 100                    | 47.13 M    | **26.05** | 71.04            | **51.52**         |
+|                         | Zipformer-Small        |                      | 100                    | 30.22 M    | 31.22     | 74.86            | 54.34             |
+| **Open-Source Models**  | Paraformer [10]        | 60,000 hours         | -                      | 220 M      | 20.16     | 74.04            | 48.67             |
+|                         | Paraformer-Finetuned*  | 190 hours            | 10                     | 220 M      | **16.65** | 66.68            | 47.18             |
+|                         | Whisper-Small [11]     | 680,000 hours        | -                      | 244 M      | 50.69     | 79.49            | 65.72             |
+|                         | SenseVoice-Small [12]  | Over 400,000 hours   | -                      | 234 M      | 24.63     | 75.58            | 50.64             |
+|                         | Qwen2-Audio [13]       | 520,000 hours        | -                      | 7B         | 29.92     | 76.24            | 54.48             |
+
 
 ## Citation
 If you use this challenge dataset and baseline system in a publication, please cite the following paper:
