@@ -1,0 +1,13 @@
+data:
+  class_path: data_loaders.icmc.InCarDataModule
+  init_args:
+    datasets: ["train", "val", "test"]
+    data_conf: ["../configs/data/config_tr.json", 
+                "../configs/data/config_tr.json",
+                "../configs/data/config_test.json"]
+    batch_size: [2, 2]
+    num_workers: 8
+    seg_length: [4, 4, null]
+    num_samples: [10000, 1500]
+
+    
