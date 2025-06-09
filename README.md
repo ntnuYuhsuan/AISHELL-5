@@ -116,8 +116,8 @@ Note:
 
 The microphone positions in the recording scenes are shown in the figure below, including the close-talking microphone and the far-field microphone:
 
-<img src="src/logo//Far-Field_Microphone_Positions.png" alt="Institution 5" style="width: 300px; height: 160px;">
-<img src="src/logo/Near-Field_Microphone_Positions.png" alt="Institution 5" style="width: 300px; height: 160px;">
+<img src="src/logo//Far-Field_Microphone_Positions.png" alt="Institution 5" style="width: 600px; height: 320px;">
+<img src="src/logo/Near-Field_Microphone_Positions.png" alt="Institution 5" style="width: 600px; height: 320px;">
 
 <b>
 Note:
