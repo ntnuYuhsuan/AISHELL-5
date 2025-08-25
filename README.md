@@ -138,6 +138,12 @@ pip install torch==1.13.1+cu116 torchvision==0.14.1+cu116 torchaudio==0.13.1 --e
 pip install -r requirements.txt
 ```
 
+### Data Cleaning (TextGrid) – preprocess
+
+- 文檔與指令請見 `preprocess/README.md`
+  - 由 TextGrid 彙整 CSV：`preprocess/process_aishell5.py`
+  - 去重與意圖分析：`preprocess/aishell5_cleaner.py`
+
 ## Eval1
 
 The main steps are all in eval1_asr/run.sh
