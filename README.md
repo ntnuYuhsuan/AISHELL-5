@@ -155,6 +155,87 @@ The main steps are all in eval1_asr/run.sh
 **[Stage 5]** Do model average and decoding.
 
 
+### Stage 0: AEC + IVA 前處理執行指南（Eval1）
+
+下列指引說明如何只執行 Stage 0 的前端增強（AEC + IVA）、長音檔分段與資料檔準備。
+
+- **輸入資料根目錄 `data`**: 指向原始 AISHELL-5 的資料根（需為絕對路徑）
+- **輸出資料根目錄 `data_enhanced`**: 產生的增強音檔輸出位置（建議在專案內 `data/aishell5_enhanced`）
+- **資料集代號 `dataset`**:
+  - `train_aec_iva_near`
+  - `dev_aec_iva`
+  - `eval_track1_aec_iva`
+
+產出物包含：
+- 在 `Eval1/exp/enhance/<train|dev|eval_track1>` 中的臨時檔、`wav.scp`、log
+- 在 `Eval1/data/<dataset>/` 中的 `wav.scp`, `text`, `utt2spk`, `spk2utt`
+- 在 `data/aishell5_enhanced/<train|dev|eval_track1>/` 中的增強後音檔
+
+請先完成環境安裝（專案根目錄的 Requirements 與「Environment Setup」段落）。
+
+#### 方式 A：使用 Eval1 的主腳本僅跑 Stage 0
+
+```Shell
+cd AISHELL-5/Eval1
+
+# 指定資料根（請改成你的絕對路徑）
+DATA=/abs/path/to/AISHELL-5
+ENH=/abs/path/to/AISHELL-5/data/aishell5_enhanced
+
+# 僅執行 Stage 0（預設只跑 train，如需 dev/eval，請改用方式 B）
+bash run_aishell5.sh \
+  --stage 0 --stop_stage 0 \
+  --data ${DATA} \
+  --data_enhanced ${ENH} \
+  --nj 64 | tee stage0.log
+```
+
+備註：`run_aishell5.sh` 的 Stage 0 會呼叫 `local/icmcasr_data_prep.sh`，其內部預設會依序執行：
+- stage 0：`local/enhancement.sh`（AEC + IVA 增強，並自動將任務分批執行以控制記憶體）
+- stage 1：`local/segment_wavs.py`（長音檔分段）
+- stage 2：`local/data_prep.py`（產生 `wav.scp/text/utt2spk/spk2utt`）
+
+執行完成後，請檢查：
+```Shell
+ls -1 data/train_aec_iva_near/{wav.scp,text,utt2spk,spk2utt}
+ls -1 exp/enhance/train/wav.scp
+```
+
+#### 方式 B：直接呼叫資料前處理腳本（可指定資料集）
+
+```Shell
+cd AISHELL-5/Eval1
+
+# 指定資料根（請改成你的絕對路徑）
+DATA=/abs/path/to/AISHELL-5
+ENH=/abs/path/to/AISHELL-5/data/aishell5_enhanced
+
+# 只跑 train（0-2 階段：增強 + 分段 + 檔案準備）
+bash local/icmcasr_data_prep.sh \
+  --stage 0 --stop_stage 2 \
+  --nj 64 \
+  ${DATA} ${ENH} train_aec_iva_near | tee stage0_train.log
+
+# 如需處理 dev：
+bash local/icmcasr_data_prep.sh \
+  --stage 0 --stop_stage 2 \
+  --nj 48 \
+  ${DATA} ${ENH} dev_aec_iva | tee stage0_dev.log
+
+# 如需處理 eval_track1：
+bash local/icmcasr_data_prep.sh \
+  --stage 0 --stop_stage 2 \
+  --nj 48 \
+  ${DATA} ${ENH} eval_track1_aec_iva | tee stage0_eval1.log
+```
+
+說明與建議：
+- **絕對路徑**：務必使用絕對路徑傳入 `DATA` 與 `ENH`。
+- **並行數 `--nj`**：請依機器記憶體調整。`local/enhancement.sh` 會自動將任務分批執行，減少一次性併發以避免 OOM。
+- **log 位置**：增強的 log 會在 `Eval1/exp/enhance/<dataset_pf>/log/`。若任務失敗可先檢查這些 log。
+- **產出檢查**：`Eval1/data/<dataset>/` 內應有 `wav.scp`, `text`, `utt2spk`, `spk2utt` 四個檔案；增強後音檔在 `${ENH}/<dataset_pf>/`。
+
+
 ## Eval2
 
 Before running the Eval2, please make sure you have run all the stages in eval1_asr/run.sh and get the trained ASR model.
